@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bee Bakery & Coffee</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; }
+        .filter-btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            background-color: #fef3c7;
+            color: #78350f;
+            border: 1px solid #fde68a;
+            cursor: pointer;
+        }
+        .filter-btn:hover { background-color: #fde68a; }
+        .filter-btn.active {
+            background-color: #f59e0b;
+            color: #451a03;
+            border-color: #f59e0b;
+        }
+        .star-icon { cursor: pointer; transition: transform 0.1s; }
+        .star-icon:hover { transform: scale(1.2); }
+    </style>
+</head>
+<body class="bg-amber-50/40 text-amber-950 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-amber-400 text-amber-950 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-md">
+                    🐝
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-bold tracking-tight text-amber-900 block leading-tight">Bee Bakery</span>
+                    <span class="text-xs font-semibold text-amber-600 uppercase tracking-widest">& Coffee</span>
+                </div>
+            </a>
+
+            <!-- Nút Giỏ hàng -->
+            <button id="cart-btn" type="button" class="relative bg-amber-100 hover:bg-amber-200 text-amber-900 px-5 py-2.5 rounded-full font-semibold transition-all flex items-center gap-2 shadow-sm cursor-pointer">
+                <span>🛒</span>
+                <span class="hidden sm:inline">Giỏ hàng</span>
+                <span id="cart-badge" class="bg-amber-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        
+        <!-- HERO BANNER -->
+        <section class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 rounded-3xl p-8 sm:p-12 mb-10 text-amber-950 shadow-xl relative overflow-hidden">
+            <div class="max-w-2xl relative z-10">
+                <span class="inline-block bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-amber-800 mb-4 shadow-sm">Thượng Hạng & Tươi Mới</span>
+                <h1 class="text-3xl sm:text-5xl font-bold tracking-tight mb-4 leading-tight">Ngọt ngào từng khoảnh khắc cùng Bee Bakery 🍯</h1>
+                <p class="text-amber-900 text-base sm:text-lg mb-6 font-medium">Thưởng thức những chiếc bánh nướng giòn rụm và ly cà phê thơm lừng được pha chế tỉ mỉ mỗi ngày.</p>
+            </div>
+        </section>
+
+        <!-- MENU SECTION -->
+        <section id="menu-section">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 mb-8 space-y-4">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-80">
+                        <input type="text" id="search-input" placeholder="Tìm bánh hoặc đồ uống..." 
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm bg-amber-50/30 font-medium">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-amber-400">🔍</span>
+                    </div>
+
+                    <!-- Filter Categories -->
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto" id="category-filters">
+                        <button type="button" class="filter-btn active" data-category="ALL">Tất cả</button>
+                        <button type="button" class="filter-btn" data-category="Bánh Kem">Bánh Kem</button>
+                        <button type="button" class="filter-btn" data-category="Bánh Mousse">Bánh Mousse</button>
+                        <button type="button" class="filter-btn" data-category="Nước Uống">Nước Uống</button>
+                        <button type="button" class="filter-btn" data-category="Bánh Mì Ngọt">Bánh Mì Ngọt</button>
+                    </div>
+
+                </div>
+
+                <div class="text-xs font-semibold text-amber-700/80 flex items-center justify-between pt-2 border-t border-amber-50">
+                    <span id="filter-status">Hiển thị toàn bộ thực đơn</span>
+                    <span id="result-count" class="bg-amber-100 px-2.5 py-0.5 rounded-full">8 sản phẩm</span>
+                </div>
+            </div>
+
+            <!-- DANH SÁCH SẢN PHẨM -->
+            <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+
+            <!-- EMPTY STATE -->
+            <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-amber-100 my-6">
+                <div class="text-6xl mb-4">🔍</div>
+                <h3 class="text-xl font-bold text-amber-900 mb-2">Không tìm thấy món bạn yêu cầu</h3>
+                <button type="button" id="reset-filter-btn" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold px-6 py-2.5 rounded-xl transition-all cursor-pointer">
+                    Xem tất cả thực đơn
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ĐÁNH GIÁ CỦA KHÁCH HÀNG -->
+        <section class="mt-16 bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-amber-100">
+            <div class="text-center max-w-xl mx-auto mb-10">
+                <h2 class="text-2xl sm:text-3xl font-bold text-amber-900 mb-2">Đánh giá từ khách hàng</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Đánh giá -->
+                <div class="bg-amber-50/50 p-6 rounded-2xl border border-amber-100/80">
+                    <h3 class="font-bold text-amber-900 mb-4 text-lg">✏️ Viết đánh giá mới</h3>
+                    <form id="review-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-amber-800 uppercase mb-1">Tên của bạn</label>
+                            <input type="text" id="reviewer-name" required placeholder="Nhập tên..." 
+                                class="w-full px-4 py-2.5 rounded-xl border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm bg-white font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-800 uppercase mb-1">Chọn số sao</label>
+                            <div class="flex gap-2 text-2xl select-none" id="star-rating">
+                                <span class="star-icon text-amber-400" data-value="1">★</span>
+                                <span class="star-icon text-amber-400" data-value="2">★</span>
+                                <span class="star-icon text-amber-400" data-value="3">★</span>
+                                <span class="star-icon text-amber-400" data-value="4">★</span>
+                                <span class="star-icon text-amber-400" data-value="5">★</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-amber-800 uppercase mb-1">Cảm nhận</label>
+                            <textarea id="reviewer-comment" required rows="3" placeholder="Bánh ngon, giao hàng nhanh..." 
+                                class="w-full px-4 py-2.5 rounded-xl border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm bg-white font-medium resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold py-3 rounded-xl transition-all shadow-sm cursor-pointer">
+                            Gửi đánh giá ngay
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Danh sách nhận xét -->
+                <div class="lg:col-span-2 space-y-4 max-h-[420px] overflow-y-auto" id="reviews-container"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-amber-950 text-amber-200/80 mt-16 py-8 border-t border-amber-900 text-center text-sm">
+        <p class="font-bold text-white text-base">🐝 Bee Bakery & Coffee © 2026</p>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none hidden">
+        <div id="cart-backdrop" class="absolute inset-0 bg-amber-950/40 backdrop-blur-sm pointer-events-auto"></div>
+        <div id="cart-panel" class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col pointer-events-auto">
+            <div class="p-5 border-b border-amber-100 flex items-center justify-between bg-amber-50">
+                <h2 class="text-lg font-bold text-amber-950">🛒 Giỏ hàng của bạn</h2>
+                <button type="button" id="close-cart-btn" class="w-8 h-8 rounded-full bg-white hover:bg-amber-100 text-amber-900 font-bold cursor-pointer">✕</button>
+            </div>
+
+            <div id="cart-items" class="flex-grow overflow-y-auto p-5 space-y-4"></div>
+
+            <div class="p-5 border-t border-amber-100 bg-amber-50/50 space-y-4">
+                <div class="flex justify-between items-center font-bold text-amber-950">
+                    <span>Tổng tiền:</span>
+                    <span id="cart-total" class="text-xl text-amber-600">0₫</span>
+                </div>
+                <button type="button" id="checkout-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold py-3.5 rounded-xl transition-all cursor-pointer">
+                    Thanh toán đơn hàng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- JAVASCRIPT THỰC THI CHẮC CHẮN 100% -->
+    <script>
+        (function() {
+            // Dữ liệu sản phẩm
+            const products = [
+                { id: 1, name: "Bánh Kem Mật Ong Bee Sweet", category: "Bánh Kem", price: 320000, rating: 5, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80", description: "Bánh kem tươi hương mật ong rừng tự nhiên, mềm mịn ngon khó cưỡng." },
+                { id: 2, name: "Cà Phê Muối Bee Special", category: "Nước Uống", price: 45000, rating: 5, image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&q=80", description: "Cà phê đậm đà kết hợp lớp kem muối béo ngậy thơm ngon." },
+                { id: 3, name: "Bánh Mousse Dâu Tây", category: "Bánh Mousse", price: 280000, rating: 4, image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=500&q=80", description: "Lớp mousse dâu tươi chua ngọt thanh mát hòa quyện cùng cốt bánh gato." },
+                { id: 4, name: "Trà Trái Cây Nhiệt Đới", category: "Nước Uống", price: 50000, rating: 5, image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=500&q=80", description: "Trà hoa quả giải nhiệt thanh mát với cam, sả và dâu tây tươi." },
+                { id: 5, name: "Bánh Croissant Bơ Tươi", category: "Bánh Mì Ngọt", price: 35000, rating: 5, image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=500&q=80", description: "Bánh sừng bò chuẩn Pháp nhiều lớp giòn rụm, ngập tràn hương bơ." },
+                { id: 6, name: "Trà Sữa Matcha Macchiato", category: "Nước Uống", price: 55000, rating: 4, image: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80", description: "Matcha Nhật Bản nguyên chất phủ lớp kem váng sữa béo nhẹ." },
+                { id: 7, name: "Bánh Mousse Socola Đen", category: "Bánh Mousse", price: 290000, rating: 5, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80", description: "Socola nguyên chất 70% đậm vị, đắng nhẹ hậu vị ngọt trào dâng." },
+                { id: 8, name: "Bánh Kem Matcha Choco", category: "Bánh Kem", price: 350000, rating: 4, image: "https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=500&q=80", description: "Sự kết hợp hoàn hảo giữa trà xanh Nhật Bản và vụn socola giòn ngon." }
+            ];
+
+            let reviews = [
+                { name: "Minh Anh", rating: 5, comment: "Cà phê muối cực kỳ đậm đà và béo ngậy! Bánh kem mật ong ăn thanh ngọt không bị gắt." },
+                { name: "Hoàng Nam", rating: 5, comment: "Bánh Croissant thơm lừng mùi bơ, ship tới nơi vẫn còn giòn 🥐 Will buy again!" }
+            ];
+
+            let cart = [];
+            let currentCategory = "ALL";
+            let searchQuery = "";
+            let selectedRating = 5;
+
+            function formatMoney(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            }
+
+            function showToast(msg) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'bg-amber-950 text-white px-4 py-3 rounded-xl shadow-xl text-xs font-medium flex items-center gap-2 border border-amber-800';
+                toast.innerHTML = `<span>🐝</span><span>${msg}</span>`;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 2500);
+            }
+
+            function renderProducts() {
+                const grid = document.getElementById('product-grid');
+                const empty = document.getElementById('empty-state');
+                
+                const filtered = products.filter(p => {
+                    const matchCat = currentCategory === 'ALL' || p.category === currentCategory;
+                    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase().trim());
+                    return matchCat && matchSearch;
+                });
+
+                document.getElementById('result-count').textContent = `${filtered.length} sản phẩm`;
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = '';
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                empty.classList.add('hidden');
+                grid.innerHTML = filtered.map(p => `
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-amber-100 flex flex-col justify-between">
+                        <div>
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-44 object-cover">
+                            <div class="p-4">
+                                <span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full">${p.category}</span>
+                                <h3 class="font-bold text-amber-950 text-base mt-2 mb-1">${p.name}</h3>
+                                <p class="text-xs text-amber-700/80 line-clamp-2">${p.description}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0 flex items-center justify-between">
+                            <span class="font-bold text-amber-600 text-base">${formatMoney(p.price)}</span>
+                            <button type="button" class="add-to-cart-btn bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold px-3 py-1.5 rounded-xl text-xs cursor-pointer" data-id="${p.id}">
+                                + Thêm
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function updateCartUI() {
+                const itemsContainer = document.getElementById('cart-items');
+                const badge = document.getElementById('cart-badge');
+                const totalEl = document.getElementById('cart-total');
+
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                badge.textContent = totalItems;
+                totalEl.textContent = formatMoney(totalPrice);
+
+                if (cart.length === 0) {
+                    itemsContainer.innerHTML = '<p class="text-center text-sm text-amber-700/60 py-8">Giỏ hàng trống</p>';
+                    return;
+                }
+
+                itemsContainer.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between py-2 border-b border-amber-100">
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-amber-950">${item.name}</h4>
+                            <p class="text-xs text-amber-600">${formatMoney(item.price)}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="change-qty-btn w-6 h-6 bg-amber-100 rounded text-xs font-bold" data-id="${item.id}" data-delta="-1">-</button>
+                            <span class="text-xs font-bold">${item.quantity}</span>
+                            <button type="button" class="change-qty-btn w-6 h-6 bg-amber-100 rounded text-xs font-bold" data-id="${item.id}" data-delta="1">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function renderReviews() {
+                const container = document.getElementById('reviews-container');
+                container.innerHTML = reviews.map(r => `
+                    <div class="bg-amber-50/40 p-4 rounded-xl border border-amber-100">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-sm text-amber-950">${r.name}</span>
+                            <span class="text-amber-400 text-xs">${'★'.repeat(r.rating)}</span>
+                        </div>
+                        <p class="text-xs text-amber-900/80">${r.comment}</p>
+                    </div>
+                `).join('');
+            }
+
+            // Gắn sự kiện (Event Delegation)
+            document.addEventListener('click', function(e) {
+                // Thêm vào giỏ
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    const id = parseInt(e.target.getAttribute('data-id'));
+                    const item = products.find(p => p.id === id);
+                    const inCart = cart.find(c => c.id === id);
+                    if (inCart) {
+                        inCart.quantity++;
+                    } else {
+                        cart.push({ ...item, quantity: 1 });
+                    }
+                    updateCartUI();
+                    showToast(`Đã thêm "${item.name}"`);
+                }
+
+                // Tăng giảm số lượng giỏ hàng
+                if (e.target.classList.contains('change-qty-btn')) {
+                    const id = parseInt(e.target.getAttribute('data-id'));
+                    const delta = parseInt(e.target.getAttribute('data-delta'));
+                    const inCartIndex = cart.findIndex(c => c.id === id);
+                    if (inCartIndex > -1) {
+                        cart[inCartIndex].quantity += delta;
+                        if (cart[inCartIndex].quantity <= 0) cart.splice(inCartIndex, 1);
+                    }
+                    updateCartUI();
+                }
+
+                // Chuyển Tab danh mục
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentCategory = e.target.getAttribute('data-category');
+                    renderProducts();
+                }
+
+                // Chọn sao đánh giá
+                if (e.target.classList.contains('star-icon')) {
+                    selectedRating = parseInt(e.target.getAttribute('data-value'));
+                    const stars = document.querySelectorAll('#star-rating .star-icon');
+                    stars.forEach((star, index) => {
+                        if (index < selectedRating) {
+                            star.classList.add('text-amber-400');
+                            star.classList.remove('text-amber-200');
+                        } else {
+                            star.classList.remove('text-amber-400');
+                            star.classList.add('text-amber-200');
+                        }
+                    });
+                }
+
+                // Mở/Đóng Giỏ hàng
+                if (e.target.id === 'cart-btn' || e.target.closest('#cart-btn')) {
+                    document.getElementById('cart-drawer').classList.remove('hidden');
+                }
+                if (e.target.id === 'close-cart-btn' || e.target.id === 'cart-backdrop') {
+                    document.getElementById('cart-drawer').classList.add('hidden');
+                }
+
+                // Thanh toán
+                if (e.target.id === 'checkout-btn') {
+                    if (cart.length === 0) {
+                        showToast("Giỏ hàng đang trống!");
+                    } else {
+                        showToast("Đặt hàng thành công! 💛");
+                        cart = [];
+                        updateCartUI();
+                        document.getElementById('cart-drawer').classList.add('hidden');
+                    }
+                }
+
+                // Reset filter
+                if (e.target.id === 'reset-filter-btn') {
+                    searchQuery = '';
+                    currentCategory = 'ALL';
+                    document.getElementById('search-input').value = '';
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.toggle('active', b.getAttribute('data-category') === 'ALL');
+                    });
+                    renderProducts();
+                }
+            });
+
+            // Tìm kiếm Debounce
+            let timer;
+            document.getElementById('search-input').addEventListener('input', function(e) {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    searchQuery = e.target.value;
+                    renderProducts();
+                }, 400);
+            });
+
+            // Gửi Đánh Giá Form
+            document.getElementById('review-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('reviewer-name').value.trim();
+                const comment = document.getElementById('reviewer-comment').value.trim();
+                if (!name || !comment) return;
+
+                reviews.unshift({ name, rating: selectedRating, comment });
+                renderReviews();
+                this.reset();
+                selectedRating = 5;
+                showToast("Cảm ơn bạn đã đánh giá!");
+            });
+
+            // Khởi chạy ban đầu
+            renderProducts();
+            renderReviews();
+            updateCartUI();
+        })();
+    </script>
+</body>
+</html>

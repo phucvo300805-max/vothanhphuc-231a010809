@@ -1,0 +1,47 @@
+/* Thiết lập Font chữ mặc định */
+body {
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* Tùy chỉnh các nút lọc Category */
+.filter-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    background-color: rgb(254 243 199 / 0.5); /* bg-amber-100/50 */
+    color: rgb(120 53 15); /* text-amber-900 */
+    border: 1px solid rgb(253 230 138); /* border-amber-200 */
+}
+
+.filter-btn:hover {
+    background-color: rgb(253 230 138); /* bg-amber-200 */
+}
+
+.filter-btn.active {
+    background-color: rgb(245 158 11); /* bg-amber-500 */
+    color: rgb(69 26 3); /* text-amber-950 */
+    border-color: rgb(245 158 11);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom Scrollbar mượt mà */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #fef3c7;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #f59e0b;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d97706;
+}
